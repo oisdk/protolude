@@ -9,7 +9,7 @@ module Base (
   ($!),
 ) where
 
--- Glorious Glashgow Haskell Compiler
+-- Glorious Glasgow Haskell Compiler
 #if defined(__GLASGOW_HASKELL__) && ( __GLASGOW_HASKELL__ >= 600 )
 
 -- Base GHC types
@@ -60,6 +60,23 @@ import GHC.OverloadedLabels as X (
     IsLabel(..)
   )
 
+import GHC.ExecutionStack as X (
+    Location(..)
+  , SrcLoc(..)
+  , getStackTrace
+  , showStackTrace
+  )
+
+import GHC.Stack as X (
+    CallStack
+  , HasCallStack
+  , callStack
+  , prettySrcLoc
+  , currentCallStack
+  , getCallStack
+  , prettyCallStack
+  )
+
 {-
 import GHC.Records as X (
     HasField(..)
@@ -76,15 +93,5 @@ infixr 0 $!
 
 ($!) :: (a -> b) -> a -> b
 f $! x  = let !vx = x in f vx
-
-#endif
-
-
--- Simple Haskell Compiler
-#if defined(__SHC_HASKELL__)
-
-import SHC.Prim as X
-import SHC.Types as X
-import SHC.Classes as X
 
 #endif

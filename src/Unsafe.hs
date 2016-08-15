@@ -6,13 +6,15 @@ module Unsafe (
   unsafeTail,
   unsafeInit,
   unsafeLast,
-  fromJust,
+  unsafeFromJust,
   unsafeIndex,
+  unsafeThrow,
 ) where
 
 import Base (Int)
 import qualified Data.List as List
 import qualified Data.Maybe as Maybe
+import qualified Control.Exception as Exc
 
 unsafeHead :: [a] -> a
 unsafeHead = List.head
@@ -26,8 +28,11 @@ unsafeInit = List.init
 unsafeLast :: [a] -> a
 unsafeLast = List.last
 
-fromJust :: Maybe.Maybe a -> a
-fromJust = Maybe.fromJust
+unsafeFromJust :: Maybe.Maybe a -> a
+unsafeFromJust = Maybe.fromJust
 
 unsafeIndex :: [a] -> Int -> a
 unsafeIndex = (List.!!)
+
+unsafeThrow :: Exc.Exception e => e -> a
+unsafeThrow = Exc.throw

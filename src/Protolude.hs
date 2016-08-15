@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE Trustworthy #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ExplicitNamespaces #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
@@ -11,8 +12,11 @@ module Protolude (
   map,
   (&),
   uncons,
+  unsnoc,
   applyN,
   print,
+  throwIO,
+  throwTo,
   show,
 
   LText,
@@ -28,19 +32,26 @@ import Functor as X
 import Either as X
 import Applicative as X
 import Conv as X
+import Panic as X
 
 import Base as Base hiding (
-    putStr
-  , putStrLn
-  , print
-  , show
-  , error
-  , undefined
+    putStr           -- Overriden by Show.putStr
+  , putStrLn         -- Overriden by Show.putStrLn
+  , print            -- Overriden by Protolude.print
+  , error            -- Overriden by Debug.error
+  , undefined        -- Overriden by Debug.undefined
+  , show             -- Overriden by Protolude.show
+  , showFloat        -- Custom Show instances deprecated.
+  , showList         -- Custom Show instances deprecated.
+  , showSigned       -- Custom Show instances deprecated.
+  , showSignedFloat  -- Custom Show instances deprecated.
+  , showsPrec        -- Custom Show instances deprecated.
   )
 import qualified Base as PBase
 
--- Used for 'show'
+-- Used for 'show', not exported.
 import Data.String (String)
+import Data.String as X (IsString)
 
 -- Maybe'ized version of partial functions
 import Safe as X (
@@ -187,6 +198,7 @@ import Control.Monad.State as X (
   , get
   , gets
   , modify
+  , state
   , withState
 
   , runState
@@ -205,6 +217,7 @@ import Control.Monad.Reader as X (
   , ask
   , asks
   , local
+  , reader
   , runReader
   , runReaderT
   )
@@ -227,7 +240,10 @@ import Control.Monad.Trans as X (
 
 -- Base types
 import Data.Int as X
-import Data.Bits as X
+import Data.Bits as X hiding (
+    unsafeShiftL
+  , unsafeShiftR
+  )
 import Data.Word as X
 import Data.Either as X
 import Data.Complex as X
@@ -273,35 +289,60 @@ import Data.ByteString as X (ByteString)
 -- Text
 import Data.Text as X (Text)
 import qualified Data.Text.Lazy
-import qualified Data.Text.IO
 
-import Data.Text.Lazy (
+import Data.Text.IO as X (
+    getLine
+  , getContents
+  , interact
+  , readFile
+  , writeFile
+  , appendFile
+  )
+
+import Data.Text.Lazy as X (
     toStrict
   , fromStrict
   )
 
-import Data.String as X (IsString)
-
--- Printf
-import Text.Printf as X (
-    PrintfArg
-  , printf
-  , hPrintf
+import Data.Text.Encoding as X (
+    encodeUtf8
+  , decodeUtf8
+  , decodeUtf8'
+  , decodeUtf8With
   )
 
 -- IO
 import System.Exit as X
---import System.Info as X
 import System.Environment as X (getArgs)
-import System.IO as X (Handle)
+import System.IO as X (
+    Handle
+  , FilePath
+  , IOMode(..)
+  , stdin
+  , stdout
+  , stderr
+  , withFile
+  , openFile
+  )
 
 -- ST
 import Control.Monad.ST as X
 
 -- Concurrency and Parallelism
-import Control.Exception as X
+import Control.Exception as X hiding (
+    throw    -- Impure throw is forbidden.
+  , throwIO
+  , throwTo
+  , assert
+  , displayException
+  )
+
+import qualified Control.Exception
+
 import Control.Monad.STM as X
-import Control.Concurrent as X
+import Control.Concurrent as X hiding (
+    throwTo
+  )
 import Control.Concurrent.Async as X
 
 import Foreign.Storable as X (Storable)
@@ -333,14 +374,29 @@ uncons :: [a] -> Maybe (a, [a])
 uncons []     = Nothing
 uncons (x:xs) = Just (x, xs)
 
+unsnoc :: [x] -> Maybe ([x],x)
+unsnoc = foldr go Nothing
+  where
+    go x mxs = Just (case mxs of
+       Nothing -> ([], x)
+       Just (xs, e) -> (x:xs, e))
+
 applyN :: Int -> (a -> a) -> a -> a
 applyN n f = X.foldr (.) identity (X.replicate n f)
 
 print :: (X.MonadIO m, PBase.Show a) => a -> m ()
 print = liftIO . PBase.print
 
+throwIO :: (X.MonadIO m, Exception e) => e -> m a
+throwIO = liftIO . Control.Exception.throwIO
+
+throwTo :: (X.MonadIO m, Exception e) => ThreadId -> e -> m ()
+throwTo tid e = liftIO (Control.Exception.throwTo tid e)
+
 show :: (Show a, StringConv String b) => a -> b
 show x = toS (PBase.show x)
-{-# SPECIALIZE show :: Show  a => a -> String  #-}
 {-# SPECIALIZE show :: Show  a => a -> Text  #-}
 {-# SPECIALIZE show :: Show  a => a -> LText  #-}
+{-# SPECIALIZE show :: Show  a => a -> ByteString  #-}
+{-# SPECIALIZE show :: Show  a => a -> LByteString  #-}
+{-# SPECIALIZE show :: Show  a => a -> String  #-}
