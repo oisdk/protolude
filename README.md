@@ -21,6 +21,7 @@ Design points:
 * Foldable / Traversable functions in scope by default.
 * Unsafe functions are prefixed with "unsafe" in separate module.
 * Compiler agnostic, GHC internal modules are abstracted out into Base.
+* ``sum`` and ``product`` are strict by default.
 * Compatibility with GHC 8.0.
 * Includes Semiring for GHC >= 7.6.
 * Includes Bifunctor for GHC >= 7.6.
@@ -137,6 +138,11 @@ panic "Thus I die. Thus, thus, thus. Now I am dead"
 
 If inside of IO simply use ``throwIO`` for exception handling, or if in pure
 business logic use well-typed checked exceptions of the ``ExceptT`` variety.
+
+* **Why is ``id`` not in scope?**
+
+It has been renamed to ``identity`` to reserve the ``id`` identifier for the
+more common use case of business logic.
 
 License
 -------

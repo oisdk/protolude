@@ -23,11 +23,15 @@ import Data.Functor (
   )
 
 import Data.Function (flip)
+import Data.Function ((.))
 
 infixl 4 $>
 
 ($>) :: Functor f => f a -> b -> f b
 ($>) = flip (<$)
+
+(<<$>>) :: (Functor f, Functor g) => (a -> b) -> f (g a) -> f (g b)
+(<<$>>) = fmap . fmap
 
 void :: Functor f => f a -> f ()
 void x = () <$ x

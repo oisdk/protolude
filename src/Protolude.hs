@@ -17,8 +17,11 @@ module Protolude (
   print,
   throwIO,
   throwTo,
+  foreach,
   show,
-
+  pass,
+  guarded,
+  guardedA,
   LText,
   LByteString,
 ) where
@@ -33,6 +36,7 @@ import Either as X
 import Applicative as X
 import Conv as X
 import Panic as X
+import Exceptions as X
 
 import Base as Base hiding (
     putStr           -- Overriden by Show.putStr
@@ -91,6 +95,8 @@ import Data.Traversable as X
 import Data.Foldable as X hiding (
     foldr1
   , foldl1
+  , product
+  , sum
   )
 import Semiring as X
 import Data.Functor.Identity as X
@@ -335,6 +341,7 @@ import Control.Exception as X hiding (
   , throwTo
   , assert
   , displayException
+  , Handler(..)
   )
 
 import qualified Control.Exception
@@ -342,6 +349,7 @@ import qualified Control.Exception
 import Control.Monad.STM as X
 import Control.Concurrent as X hiding (
     throwTo
+  , yield
   )
 import Control.Concurrent.Async as X
 
@@ -392,6 +400,18 @@ throwIO = liftIO . Control.Exception.throwIO
 
 throwTo :: (X.MonadIO m, Exception e) => ThreadId -> e -> m ()
 throwTo tid e = liftIO (Control.Exception.throwTo tid e)
+
+foreach :: Functor f => f a -> (a -> b) -> f b
+foreach = flip fmap
+
+pass :: Applicative f => f ()
+pass = pure ()
+
+guarded :: (Alternative f) => (a -> Bool) -> a -> f a
+guarded p x = X.bool empty (pure x) (p x)
+
+guardedA :: (Functor f, Alternative t) => (a -> f Bool) -> a -> f (t a)
+guardedA p x = X.bool empty (pure x) <$> p x
 
 show :: (Show a, StringConv String b) => a -> b
 show x = toS (PBase.show x)
