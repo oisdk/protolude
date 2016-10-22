@@ -30,6 +30,10 @@ mapMaybe = (=<<) . (.) choice
 filterM :: (Monad m, Alternative m, Applicative f, Traversable m) => (a -> f Bool) -> m a -> f (m a)
 filterM p = fmap join . traverse (\x -> (x <$) . guard <$> p x)
 
+-- | >>> ordNub [1,2,3,2,4,1,5]
+-- [1,2,3,4,5]
+-- >>> take 5 (ordNub [1..])
+-- [1,2,3,4,5]
 ordNub :: (Monad m, Alternative m, Traversable m, Ord a) => m a -> m a
 ordNub = flip evalState Set.empty
        . filterM (\e -> gets (Set.notMember e) <* modify' (Set.insert e))
