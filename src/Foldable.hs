@@ -16,14 +16,16 @@ module Foldable
   , foldr2
   ) where
 
-import           Data.Foldable as F hiding (foldl, foldl1, foldr1, maximum,
-                                     maximumBy, minimum, minimumBy, product,
-                                     sum, any, all)
+import           Data.Foldable as F hiding (all, any, foldl, foldl1, foldr1,
+                                     maximum, maximumBy, minimum, minimumBy,
+                                     product, sum)
 
 import           Data.Function (const, (.))
 import           Data.Maybe    (Maybe (..), maybe)
 import           Data.Ord      (Ord, Ordering (..), max, min)
-import Semiring
+import           Prelude       hiding (foldl, foldl1, foldr1, head, last,
+                                maximum, minimum, product, sum, (*), (+))
+import           Semiring
 
 foldl :: Foldable f => (b -> a -> b) -> b -> f a -> b
 foldl = foldl'
@@ -55,12 +57,14 @@ minimum = foldl1 min
 maximum :: (Foldable f, Ord a) => f a -> Maybe a
 maximum = foldl1 max
 
+-- | prop> minimumBy compare (xs :: [Int]) == minimum xs
 minimumBy :: (Foldable f) => (a -> a -> Ordering) -> f a -> Maybe a
 minimumBy cmp = foldl1 f where
   f x y = case cmp x y of
     GT -> y
     _  -> x
 
+-- | prop> maximumBy compare (xs :: [Int]) == maximum xs
 maximumBy :: (Foldable f) => (a -> a -> Ordering) -> f a -> Maybe a
 maximumBy cmp = foldl1 f where
   f x y = case cmp x y of
@@ -70,6 +74,7 @@ maximumBy cmp = foldl1 f where
 newtype ScottZip a b =
   ScottZip (a -> (ScottZip a b -> b) -> b)
 
+-- | prop> foldr2 (\x y zs -> (x,y) : zs) [] xs ys == zip xs ys
 foldr2 :: (Foldable f, Foldable g) => (a -> b -> c -> c) -> c -> f a -> g b -> c
 foldr2 c i xs = foldr f (const i) xs . ScottZip . foldr g (\_ _ -> i) where
  g e2 r2 e1 r1 = c e1 e2 (r1 (ScottZip r2))
