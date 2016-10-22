@@ -13,6 +13,7 @@ module Foldable
   , maximum
   , minimumBy
   , maximumBy
+  , foldr2
   ) where
 
 import           Data.Foldable as F hiding (foldl, foldl1, foldr1, maximum,
@@ -65,3 +66,11 @@ maximumBy cmp = foldl1 f where
   f x y = case cmp x y of
     LT -> y
     _  -> x
+
+newtype ScottZip a b =
+  ScottZip (a -> (ScottZip a b -> b) -> b)
+
+foldr2 :: (Foldable f, Foldable g) => (a -> b -> c -> c) -> c -> f a -> g b -> c
+foldr2 c i xs = foldr f (const i) xs . ScottZip . foldr g (\_ _ -> i) where
+ g e2 r2 e1 r1 = c e1 e2 (r1 (ScottZip r2))
+ f e r (ScottZip x) = x e r
