@@ -216,7 +216,7 @@ import Data.Char as X (chr)
 import Data.Bool as X hiding (bool)
 import Data.Maybe as X hiding (fromJust, mapMaybe)
 
--- Genericss
+-- Generics
 import GHC.Generics as X
   ( Generic(..)
   , Rep

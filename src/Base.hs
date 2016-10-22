@@ -13,7 +13,6 @@ module Base (
 #if defined(__GLASGOW_HASKELL__) && ( __GLASGOW_HASKELL__ >= 600 )
 
 -- Base GHC types
-import GHC.Num as X
 import GHC.Enum as X
 import GHC.Real as X
 import GHC.Float as X
