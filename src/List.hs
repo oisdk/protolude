@@ -1,50 +1,51 @@
-{-# LANGUAGE Safe #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE Safe              #-}
 
-module List (
-  head,
-  ordNub,
-  sortOn,
-  list,
-  product,
-  sum
-) where
+module List
+ ( uncons
+ , unfoldl
+ , module L
+ ) where
 
-import Data.List (sortBy)
-import Data.Maybe (Maybe(..))
-import Data.Ord (Ord, comparing)
-import Data.Foldable (Foldable, foldr, foldl')
-import Data.Function ((.))
-import Data.Functor (fmap)
-import Control.Monad (return)
-import qualified Data.Set as Set
-import GHC.Num (Num, (+), (*))
+import Data.List as L
+  ( splitAt
+  , break
+  , intercalate
+  , isPrefixOf
+  , drop
+  , reverse
+  , replicate
+  , take
+  , sortBy
+  , sortOn
+  , sort
+  , intersperse
+  , transpose
+  , subsequences
+  , permutations
+  , scanl
+  , scanr
+  , iterate
+  , repeat
+  , cycle
+  , unfoldr
+  , takeWhile
+  , dropWhile
+  , group
+  , inits
+  , tails
+  , unfoldr
+  , zipWith
+  , zip
+  )
 
-head :: (Foldable f) => f a -> Maybe a
-head = foldr (\x _ -> return x) Nothing
+import           Data.Function (flip, (.))
+import           Data.Maybe    (Maybe (..), maybe)
+import           Data.Tuple    (uncurry)
 
-sortOn :: (Ord o) => (a -> o) -> [a] -> [a]
-sortOn = sortBy . comparing
+uncons :: [a] -> Maybe (a, [a])
+uncons []     = Nothing
+uncons (x:xs) = Just (x, xs)
 
--- O(n * log n)
-ordNub :: (Ord a) => [a] -> [a]
-ordNub l = go Set.empty l
-  where
-    go _ []     = []
-    go s (x:xs) =
-      if x `Set.member` s
-      then go s xs
-      else x : go (Set.insert x s) xs
-
-list :: [b] -> (a -> b) -> [a] -> [b]
-list def f xs = case xs of
-  [] -> def
-  _  -> fmap f xs
-
-{-# INLINE product #-}
-product :: (Foldable f, Num a) => f a -> a
-product = foldl' (*) 1
-
-{-# INLINE sum #-}
-sum :: (Foldable f, Num a) => f a -> a
-sum = foldl' (+) 0
+unfoldl :: (b -> Maybe (b, a)) -> b -> [a]
+unfoldl f = r [] where r a = maybe a ((uncurry.flip) (r . (:a))) . f

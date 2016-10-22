@@ -8,38 +8,33 @@
 module Protolude (
   module X,
   module Base,
-  identity,
-  map,
-  (&),
-  uncons,
-  unsnoc,
-  applyN,
   print,
   throwIO,
   throwTo,
-  foreach,
   show,
   pass,
-  guarded,
-  guardedA,
   LText,
   LByteString,
 ) where
 
-import List as X
 import Show as X
+import Cat as X
 import Bool as X
 import Debug as X
 import Monad as X
 import Functor as X
+import Operator as X
+import Function as X
 import Either as X
 import Applicative as X
+import Alternative as X
+import Foldable as X
 import Conv as X
 import Panic as X
 import Exceptions as X
 
-import Base as Base hiding (
-    putStr           -- Overriden by Show.putStr
+import Base as Base hiding
+  ( putStr           -- Overriden by Show.putStr
   , putStrLn         -- Overriden by Show.putStrLn
   , print            -- Overriden by Protolude.print
   , error            -- Overriden by Debug.error
@@ -58,8 +53,8 @@ import Data.String (String)
 import Data.String as X (IsString)
 
 -- Maybe'ized version of partial functions
-import Safe as X (
-    headMay
+import Safe as X
+  ( headMay
   , headDef
   , initMay
   , initDef
@@ -76,8 +71,8 @@ import Safe as X (
   )
 
 -- Applicatives
-import Control.Applicative as X (
-    Applicative(..)
+import Control.Applicative as X
+  ( Applicative(..)
   , Alternative(..)
   , Const(..)
   , ZipList(..)
@@ -92,12 +87,6 @@ import Control.Applicative as X (
 import Data.Eq as X
 import Data.Ord as X
 import Data.Traversable as X
-import Data.Foldable as X hiding (
-    foldr1
-  , foldl1
-  , product
-  , sum
-  )
 import Semiring as X
 import Data.Functor.Identity as X
 
@@ -115,8 +104,8 @@ import Bifunctor as X (Bifunctor(..))
 #endif
 
 -- Deepseq
-import Control.DeepSeq as X (
-    NFData(..)
+import Control.DeepSeq as X
+  ( NFData(..)
   , ($!!)
   , deepseq
   , force
@@ -124,36 +113,6 @@ import Control.DeepSeq as X (
 
 -- Data structures
 import Data.Tuple as X
-import Data.List as X (
-    splitAt
-  , break
-  , intercalate
-  , isPrefixOf
-  , drop
-  , filter
-  , reverse
-  , replicate
-  , take
-  , sortBy
-  , sort
-  , intersperse
-  , transpose
-  , subsequences
-  , permutations
-  , scanl
-  , scanr
-  , iterate
-  , repeat
-  , cycle
-  , unfoldr
-  , takeWhile
-  , dropWhile
-  , group
-  , inits
-  , tails
-  , zipWith
-  , zip
-  )
 
 import Data.Map as X (Map)
 import Data.Set as X (Set)
@@ -162,25 +121,25 @@ import Data.IntMap as X (IntMap)
 import Data.IntSet as X (IntSet)
 
 #if ( __GLASGOW_HASKELL__ >= 710 )
-import Data.Proxy as X (
-    Proxy(..)
+import Data.Proxy as X
+  ( Proxy(..)
   )
 
-import Data.Typeable as X (
-    TypeRep
+import Data.Typeable as X
+  ( TypeRep
   , Typeable
   , typeRep
   , cast
   , eqT
   )
 
-import Data.Type.Coercion as X (
-    Coercion(..)
+import Data.Type.Coercion as X
+  ( Coercion(..)
   , coerceWith
   )
 
-import Data.Type.Equality as X (
-    (:~:)(..)
+import Data.Type.Equality as X
+  ( (:~:)(..)
   , type (==)
   , sym
   , trans
@@ -188,16 +147,16 @@ import Data.Type.Equality as X (
   , gcastWith
   )
 
-import Data.Void as X (
-    Void
+import Data.Void as X
+  ( Void
   , absurd
   , vacuous
   )
 #endif
 
 -- Monad transformers
-import Control.Monad.State as X (
-    MonadState
+import Control.Monad.State as X
+  ( MonadState
   , State
   , StateT
   , put
@@ -216,8 +175,8 @@ import Control.Monad.State as X (
   , evalStateT
   )
 
-import Control.Monad.Reader as X (
-    MonadReader
+import Control.Monad.Reader as X
+  ( MonadReader
   , Reader
   , ReaderT
   , ask
@@ -228,8 +187,8 @@ import Control.Monad.Reader as X (
   , runReaderT
   )
 
-import Control.Monad.Except as X (
-    MonadError
+import Control.Monad.Except as X
+  ( MonadError
   , Except
   , ExceptT
   , throwError
@@ -238,16 +197,16 @@ import Control.Monad.Except as X (
   , runExceptT
   )
 
-import Control.Monad.Trans as X (
-    MonadIO
+import Control.Monad.Trans as X
+  ( MonadIO
   , lift
   , liftIO
   )
 
 -- Base types
 import Data.Int as X
-import Data.Bits as X hiding (
-    unsafeShiftL
+import Data.Bits as X hiding
+  ( unsafeShiftL
   , unsafeShiftR
   )
 import Data.Word as X
@@ -255,20 +214,11 @@ import Data.Either as X
 import Data.Complex as X
 import Data.Char as X (chr)
 import Data.Bool as X hiding (bool)
-import Data.Maybe as X hiding (fromJust)
-
-import Data.Function as X (
-    const
-  , (.)
-  , ($)
-  , flip
-  , fix
-  , on
-  )
+import Data.Maybe as X hiding (fromJust, mapMaybe)
 
 -- Genericss
-import GHC.Generics as X (
-    Generic(..)
+import GHC.Generics as X
+  ( Generic(..)
   , Rep
   , K1(..)
   , M1(..)
@@ -296,8 +246,8 @@ import Data.ByteString as X (ByteString)
 import Data.Text as X (Text)
 import qualified Data.Text.Lazy
 
-import Data.Text.IO as X (
-    getLine
+import Data.Text.IO as X
+  ( getLine
   , getContents
   , interact
   , readFile
@@ -305,13 +255,13 @@ import Data.Text.IO as X (
   , appendFile
   )
 
-import Data.Text.Lazy as X (
-    toStrict
+import Data.Text.Lazy as X
+  ( toStrict
   , fromStrict
   )
 
-import Data.Text.Encoding as X (
-    encodeUtf8
+import Data.Text.Encoding as X
+  ( encodeUtf8
   , decodeUtf8
   , decodeUtf8'
   , decodeUtf8With
@@ -320,8 +270,8 @@ import Data.Text.Encoding as X (
 -- IO
 import System.Exit as X
 import System.Environment as X (getArgs)
-import System.IO as X (
-    Handle
+import System.IO as X
+  ( Handle
   , FilePath
   , IOMode(..)
   , stdin
@@ -335,8 +285,8 @@ import System.IO as X (
 import Control.Monad.ST as X
 
 -- Concurrency and Parallelism
-import Control.Exception as X hiding (
-    throw    -- Impure throw is forbidden.
+import Control.Exception as X hiding
+  ( throw    -- Impure throw is forbidden.
   , throwIO
   , throwTo
   , assert
@@ -347,8 +297,8 @@ import Control.Exception as X hiding (
 import qualified Control.Exception
 
 import Control.Monad.STM as X
-import Control.Concurrent as X hiding (
-    throwTo
+import Control.Concurrent as X hiding
+  ( throwTo
   , yield
   )
 import Control.Concurrent.Async as X
@@ -356,8 +306,8 @@ import Control.Concurrent.Async as X
 import Foreign.Storable as X (Storable)
 
 -- Read instances hiding unsafe builtins (read)
-import Text.Read as X (
-    Read
+import Text.Read as X
+  ( Read
   , reads
   , readMaybe
   , readEither
@@ -366,31 +316,6 @@ import Text.Read as X (
 -- Type synonymss for lazy texts
 type LText = Data.Text.Lazy.Text
 type LByteString = Data.ByteString.Lazy.ByteString
-
-infixl 1 &
-
-(&) :: a -> (a -> b) -> b
-x & f = f x
-
-identity :: a -> a
-identity x = x
-
-map :: Functor f => (a -> b) -> f a -> f b
-map = fmap
-
-uncons :: [a] -> Maybe (a, [a])
-uncons []     = Nothing
-uncons (x:xs) = Just (x, xs)
-
-unsnoc :: [x] -> Maybe ([x],x)
-unsnoc = foldr go Nothing
-  where
-    go x mxs = Just (case mxs of
-       Nothing -> ([], x)
-       Just (xs, e) -> (x:xs, e))
-
-applyN :: Int -> (a -> a) -> a -> a
-applyN n f = X.foldr (.) identity (X.replicate n f)
 
 print :: (X.MonadIO m, PBase.Show a) => a -> m ()
 print = liftIO . PBase.print
@@ -401,17 +326,8 @@ throwIO = liftIO . Control.Exception.throwIO
 throwTo :: (X.MonadIO m, Exception e) => ThreadId -> e -> m ()
 throwTo tid e = liftIO (Control.Exception.throwTo tid e)
 
-foreach :: Functor f => f a -> (a -> b) -> f b
-foreach = flip fmap
-
 pass :: Applicative f => f ()
 pass = pure ()
-
-guarded :: (Alternative f) => (a -> Bool) -> a -> f a
-guarded p x = X.bool empty (pure x) (p x)
-
-guardedA :: (Functor f, Alternative t) => (a -> f Bool) -> a -> f (t a)
-guardedA p x = X.bool empty (pure x) <$> p x
 
 show :: (Show a, StringConv String b) => a -> b
 show x = toS (PBase.show x)

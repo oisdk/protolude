@@ -14,7 +14,6 @@ module Monad (
 
   , join
   , mfilter
-  , filterM
   , mapAndUnzipM
   , zipWithM
   , zipWithM_

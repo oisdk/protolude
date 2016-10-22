@@ -31,23 +31,26 @@ Source-Repository head
     location: git@github.com:sdiehl/protolude.git
 
 library
-  exposed-modules:     
-    Protolude
-    Unsafe
-    Base
-    Applicative
-    Bool
-    Debug
-    List
-    Monad
-    Show
-    Conv
-    Either
-    Functor
-    Semiring
-    Bifunctor
-    Exceptions
-    Panic
+  exposed-modules: Protolude
+                   Unsafe
+                   Base
+                   Cat
+                   Applicative
+                   Alternative
+                   Foldable
+                   Function
+                   Operator
+                   Bool
+                   Debug
+                   Monad
+                   Show
+                   Conv
+                   Either
+                   Functor
+                   Semiring
+                   Bifunctor
+                   Exceptions
+                   Panic
 
   other-modules:
 
