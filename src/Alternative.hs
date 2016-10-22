@@ -1,16 +1,26 @@
-module Alternative where
+module Alternative
+ ( filter
+ , asum
+ , guarded
+ , choice
+ , eitherA
+ , mapMaybe
+ , filterM
+ , ordNub
+ ) where
 
 import           Control.Applicative (Alternative (..), Applicative (..))
 import           Control.Monad       (Monad (..), guard, join, (=<<))
 import           Control.Monad.State (evalState, gets, modify')
 import           Data.Bool           (Bool)
 import           Data.Either         (Either (..))
-import           Data.Foldable       (Foldable (..))
+import           Data.Foldable       (Foldable (..), asum)
 import           Data.Function       (flip, (.))
 import           Data.Functor        (fmap, (<$), (<$>))
 import           Data.Ord            (Ord)
 import qualified Data.Set            as Set
 import           Data.Traversable    (Traversable (..))
+import           Prelude             hiding (filter)
 
 filter :: (Monad m, Alternative m) => (a -> Bool) -> m a -> m a
 filter p = (=<<) ((<$) <*> guard . p)

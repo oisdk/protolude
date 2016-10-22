@@ -5,6 +5,14 @@ import           Protolude
 import           Test.DocTest
 import           Test.QuickCheck
 
+
+_expectTypes :: ()
+_expectTypes = () where
+  _dot :: Category cat => cat b c -> cat a b -> cat a c
+  _dot = (.)
+  _id :: Category cat => cat a a
+  _id = id
+
 prop_filter :: [Int] -> Property
 prop_filter xs = filter even xs === [ x | x <- xs, even x ]
 
