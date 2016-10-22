@@ -1,3 +1,5 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 module Foldable
   ( module F
   , foldl
@@ -15,12 +17,12 @@ module Foldable
 
 import           Data.Foldable as F hiding (foldl, foldl1, foldr1, maximum,
                                      maximumBy, minimum, minimumBy, product,
-                                     sum)
+                                     sum, any, all)
 
 import           Data.Function (const, (.))
 import           Data.Maybe    (Maybe (..), maybe)
 import           Data.Ord      (Ord, Ordering (..), max, min)
-import           GHC.Num       (Num, (*), (+))
+import Semiring
 
 foldl :: Foldable f => (b -> a -> b) -> b -> f a -> b
 foldl = foldl'
@@ -39,12 +41,12 @@ last :: Foldable f => f a -> Maybe a
 last = foldl1 const
 
 {-# INLINE product #-}
-product :: (Foldable f, Num a) => f a -> a
-product = foldl' (*) 1
+product :: (Foldable f, Semiring a) => f a -> a
+product = foldl' (*) one
 
 {-# INLINE sum #-}
-sum :: (Foldable f, Num a) => f a -> a
-sum = foldl' (+) 0
+sum :: (Foldable f, Semiring a) => f a -> a
+sum = foldl' (+) zero
 
 minimum :: (Foldable f, Ord a) => f a -> Maybe a
 minimum = foldl1 min

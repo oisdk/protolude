@@ -1,3 +1,5 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 module Function
  ( module F
  , applyN
@@ -7,13 +9,8 @@ module Function
 import           Base
 import           Data.Bool
 import           Data.Eq
-import Data.Function as F
-  ( const
-  , ($)
-  , flip
-  , fix
-  , on
-  )
+import           Data.Function as F (const, fix, flip, on, ($))
+import           Semiring
 
 applyN :: (a -> a) -> Int -> a -> a
 applyN f = go where
